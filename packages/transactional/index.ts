@@ -1,3 +1,4 @@
 // Email Templates
-export { VerifyEmail } from "./emails/verify-email";
+export { AdminInviteEmail } from "./emails/admin-invite";
 export { ForgotPassword } from "./emails/forgot-password";
+export { VerifyEmail } from "./emails/verify-email";

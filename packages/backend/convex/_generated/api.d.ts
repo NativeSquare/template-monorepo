@@ -16,6 +16,8 @@ import type * as lib_auth_ResendOTP from "../lib/auth/ResendOTP.js";
 import type * as lib_auth_ResendOTPPasswordReset from "../lib/auth/ResendOTPPasswordReset.js";
 import type * as migrations from "../migrations.js";
 import type * as storage from "../storage.js";
+import type * as table_admin from "../table/admin.js";
+import type * as table_adminInvites from "../table/adminInvites.js";
 import type * as table_feedback from "../table/feedback.js";
 import type * as table_users from "../table/users.js";
 import type * as utils_generateFunctions from "../utils/generateFunctions.js";
@@ -35,6 +37,8 @@ declare const fullApi: ApiFromModules<{
   "lib/auth/ResendOTPPasswordReset": typeof lib_auth_ResendOTPPasswordReset;
   migrations: typeof migrations;
   storage: typeof storage;
+  "table/admin": typeof table_admin;
+  "table/adminInvites": typeof table_adminInvites;
   "table/feedback": typeof table_feedback;
   "table/users": typeof table_users;
   "utils/generateFunctions": typeof utils_generateFunctions;

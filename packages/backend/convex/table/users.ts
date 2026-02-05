@@ -18,6 +18,7 @@ const documentSchema = {
   bio: v.optional(v.string()),
   birthDate: v.optional(v.string()),
   hasCompletedOnboarding: v.optional(v.boolean()),
+  role: v.optional(v.union(v.literal("user"), v.literal("admin"))),
 };
 
 const partialSchema = {
@@ -34,6 +35,7 @@ const partialSchema = {
   bio: v.optional(v.string()),
   birthDate: v.optional(v.string()),
   hasCompletedOnboarding: v.optional(v.boolean()),
+  role: v.optional(v.union(v.literal("user"), v.literal("admin"))),
 };
 
 export const users = defineTable(documentSchema).index("email", ["email"]);

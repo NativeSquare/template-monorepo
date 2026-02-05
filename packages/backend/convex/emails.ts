@@ -42,26 +42,42 @@ export const sendEmail = internalAction({
 });
 
 // =============================================================================
-// Example: Add your custom email actions below
+// Admin Invite Email
 // =============================================================================
 
-// Example: Welcome email (uncomment and customize when needed)
-// import { WelcomeEmail } from "@packages/transactional";
-//
-// export const sendWelcomeEmail = internalAction({
-//   args: {
-//     to: v.string(),
-//     name: v.string(),
-//   },
-//   returns: v.string(),
-//   handler: async (ctx, args) => {
-//     const html = await render(WelcomeEmail({ name: args.name }));
-//     const emailId = await resend.sendEmail(ctx, {
-//       from: DEFAULT_FROM,
-//       to: args.to,
-//       subject: `Welcome to ${APP_NAME}!`,
-//       html,
-//     });
-//     return emailId;
-//   },
-// });
+import { AdminInviteEmail } from "@packages/transactional";
+
+export const sendAdminInviteEmail = internalAction({
+  args: {
+    to: v.string(),
+    name: v.string(),
+    token: v.string(),
+  },
+  returns: v.string(),
+  handler: async (ctx, args) => {
+    const inviteUrl = `${process.env.ADMIN_URL || "http://localhost:3001"}/accept-invite?token=${args.token}`;
+
+    const isDev = process.env.IS_DEV === "true";
+    if (isDev) {
+      console.log(`[DEV] Admin invite email to ${args.to}`);
+      console.log(`[DEV] Invite URL: ${inviteUrl}`);
+      return "dev-email-id";
+    }
+
+    const html = await render(
+      AdminInviteEmail({
+        name: args.name,
+        inviteUrl,
+      })
+    );
+
+    const emailId = await resend.sendEmail(ctx, {
+      from: DEFAULT_FROM,
+      to: args.to,
+      subject: `You're invited to join ${APP_NAME} Admin`,
+      html,
+    });
+
+    return emailId;
+  },
+});
