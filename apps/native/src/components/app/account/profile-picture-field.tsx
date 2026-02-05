@@ -45,10 +45,14 @@ export function ProfilePictureField({
           {image ? (
             <AvatarImage source={{ uri: image }} />
           ) : (
-            <AvatarFallback className="bg-background">
-              <Text className="text-3xl font-semibold">
-                {(name.trim()?.[0] ?? "🙂").toUpperCase()}
-              </Text>
+            <AvatarFallback className="dark:bg-input/30 border border-input bg-background">
+              {name.trim() ? (
+                <Text className="text-3xl font-semibold">
+                  {name.trim()[0].toUpperCase()}
+                </Text>
+              ) : (
+                <Ionicons name="person" size={48} className="text-muted-foreground/50" />
+              )}
             </AvatarFallback>
           )}
         </Avatar>

@@ -50,6 +50,7 @@ export default function Account() {
     <>
       <ScrollView
         keyboardShouldPersistTaps="handled"
+        className="bg-background flex-1"
         contentContainerClassName="p-4 pb-10 sm:p-6 gap-5"
         keyboardDismissMode="interactive"
         contentInsetAdjustmentBehavior="automatic"

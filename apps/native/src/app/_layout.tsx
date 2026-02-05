@@ -8,6 +8,7 @@ import { PortalHost } from "@rn-primitives/portal";
 import { ConvexReactClient, useConvexAuth, useQuery } from "convex/react";
 import { Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
+import { useColorScheme } from "nativewind";
 import { useEffect } from "react";
 import { ActivityIndicator, Platform, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -56,32 +57,39 @@ export default function RootLayout() {
 }
 
 function RootStack() {
+  const { colorScheme } = useColorScheme();
   const { isAuthenticated, isLoading } = useConvexAuth();
   const user = useQuery(api.table.users.currentUser);
   const hasCompletedOnboarding = user?.hasCompletedOnboarding ?? false;
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator />
+      <View className="flex-1 justify-center items-center bg-background">
+        <ActivityIndicator color={colorScheme === "dark" ? "white" : "black"} />
       </View>
     );
   }
   return (
-    <Stack
-      screenOptions={{ headerShown: false, animation: "fade_from_bottom" }}
-    >
-      <Stack.Protected guard={!isAuthenticated}>
-        <Stack.Screen name="(auth)" />
-      </Stack.Protected>
+    <View className="flex-1 bg-background">
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          animation: "fade_from_bottom",
+          contentStyle: { backgroundColor: "transparent" },
+        }}
+      >
+        <Stack.Protected guard={!isAuthenticated}>
+          <Stack.Screen name="(auth)" />
+        </Stack.Protected>
 
-      <Stack.Protected guard={isAuthenticated && !hasCompletedOnboarding}>
-        <Stack.Screen name="(onboarding)" />
-      </Stack.Protected>
+        <Stack.Protected guard={isAuthenticated && !hasCompletedOnboarding}>
+          <Stack.Screen name="(onboarding)" />
+        </Stack.Protected>
 
-      <Stack.Protected guard={isAuthenticated && hasCompletedOnboarding}>
-        <Stack.Screen name="(app)" />
-      </Stack.Protected>
-    </Stack>
+        <Stack.Protected guard={isAuthenticated && hasCompletedOnboarding}>
+          <Stack.Screen name="(app)" />
+        </Stack.Protected>
+      </Stack>
+    </View>
   );
 }

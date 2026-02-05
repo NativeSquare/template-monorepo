@@ -11,12 +11,14 @@ import { Text } from "@/components/ui/text";
 import { VerifyEmailSchema } from "@/validation/auth";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useRouter } from "expo-router";
+import { useColorScheme } from "nativewind";
 import * as React from "react";
 import { ActivityIndicator, View } from "react-native";
 import z from "zod";
 import { OTPInput } from "../custom/otp-input";
 
 export function VerifyEmailForm({ email }: { email: string }) {
+  const { colorScheme } = useColorScheme();
   const [code, setCode] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
   const [fieldErrors, setFieldErrors] = React.useState<{
@@ -94,7 +96,7 @@ export function VerifyEmailForm({ email }: { email: string }) {
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <ActivityIndicator color="white" />
+                  <ActivityIndicator color={colorScheme === "dark" ? "black" : "white"} />
                 ) : (
                   <Text>Continue</Text>
                 )}

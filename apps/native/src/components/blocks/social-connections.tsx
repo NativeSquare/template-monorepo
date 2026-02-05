@@ -78,7 +78,7 @@ export function SocialConnections({
             disabled={isLoading}
           >
             {isLoading ? (
-              <ActivityIndicator color="white" />
+              <ActivityIndicator color={colorScheme === "dark" ? "black" : "white"} />
             ) : (
               <Image
                 className={cn(

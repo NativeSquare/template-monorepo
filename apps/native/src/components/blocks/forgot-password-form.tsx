@@ -14,12 +14,14 @@ import { ForgotPasswordSchema } from "@/validation/auth";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useConvex } from "convex/react";
 import { useRouter } from "expo-router";
+import { useColorScheme } from "nativewind";
 import * as React from "react";
 import { ActivityIndicator, View } from "react-native";
 import z from "zod";
 import { api } from "@packages/backend/convex/_generated/api";
 
 export function ForgotPasswordForm() {
+  const { colorScheme } = useColorScheme();
   const [email, setEmail] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
   const [fieldErrors, setFieldErrors] = React.useState<{
@@ -112,7 +114,7 @@ export function ForgotPasswordForm() {
             </View>
             <Button className="w-full" onPress={onSubmit} disabled={isLoading}>
               {isLoading ? (
-                <ActivityIndicator color="white" />
+                <ActivityIndicator color={colorScheme === "dark" ? "black" : "white"} />
               ) : (
                 <Text>Reset your password</Text>
               )}

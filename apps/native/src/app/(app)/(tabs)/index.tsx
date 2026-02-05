@@ -5,6 +5,7 @@ export default function Home() {
   return (
     <ScrollView
       keyboardShouldPersistTaps="handled"
+      className="bg-background flex-1"
       contentContainerClassName="sm:flex-1 items-center justify-center p-4 py-8 sm:py-4 sm:p-6"
       keyboardDismissMode="interactive"
       contentInsetAdjustmentBehavior="automatic"

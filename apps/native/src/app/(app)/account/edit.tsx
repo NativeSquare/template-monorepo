@@ -10,6 +10,7 @@ import { api } from "@packages/backend/convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
+import { useColorScheme } from "nativewind";
 import React from "react";
 import { ActivityIndicator, ScrollView, View } from "react-native";
 import z from "zod";
@@ -20,6 +21,7 @@ type ProfileFormData = {
 };
 
 export default function EditProfileScreen() {
+  const { colorScheme } = useColorScheme();
   const router = useRouter();
   const user = useQuery(api.table.users.currentUser);
   const patchUser = useMutation(api.table.users.patch);
@@ -112,7 +114,7 @@ export default function EditProfileScreen() {
           disabled={isLoading || isUploading || !hasChanges}
         >
           {isLoading || isUploading ? (
-            <ActivityIndicator color="white" />
+            <ActivityIndicator color={colorScheme === "dark" ? "black" : "white"} />
           ) : (
             <Text>Save</Text>
           )}
@@ -122,7 +124,7 @@ export default function EditProfileScreen() {
   };
 
   return (
-    <View className="flex-1 mt-safe">
+    <View className="flex-1 mt-safe bg-background">
       <ScrollView
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="interactive"

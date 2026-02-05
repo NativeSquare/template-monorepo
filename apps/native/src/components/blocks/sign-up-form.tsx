@@ -17,11 +17,13 @@ import { getConvexErrorMessage } from "@/utils/getConvexErrorMessage";
 import { SignUpSchema } from "@/validation/auth";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useRouter } from "expo-router";
+import { useColorScheme } from "nativewind";
 import * as React from "react";
 import { ActivityIndicator, type TextInput, View } from "react-native";
 import z from "zod";
 
 export function SignUpForm() {
+  const { colorScheme } = useColorScheme();
   const passwordInputRef = React.useRef<TextInput>(null);
   const confirmPasswordInputRef = React.useRef<TextInput>(null);
   const [email, setEmail] = React.useState("");
@@ -189,7 +191,7 @@ export function SignUpForm() {
             </View>
             <Button className="w-full" onPress={onSubmit} disabled={isLoading}>
               {isLoading ? (
-                <ActivityIndicator color="white" />
+                <ActivityIndicator color={colorScheme === "dark" ? "black" : "white"} />
               ) : (
                 <Text>Continue</Text>
               )}

@@ -11,6 +11,7 @@ import { api } from "@packages/backend/convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { router } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
+import { useColorScheme } from "nativewind";
 import React from "react";
 import { ActivityIndicator, ScrollView, View } from "react-native";
 import z from "zod";
@@ -22,6 +23,7 @@ export type FeedbackFormData = {
 };
 
 export default function SendFeedback() {
+  const { colorScheme } = useColorScheme();
   const [formData, setFormData] = React.useState<FeedbackFormData>();
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -110,7 +112,7 @@ export default function SendFeedback() {
         )}
         <Button className="w-full" onPress={handleSubmit} disabled={isLoading}>
           {isLoading ? (
-            <ActivityIndicator color="white" />
+            <ActivityIndicator color={colorScheme === "dark" ? "black" : "white"} />
           ) : (
             <Text>Submit</Text>
           )}
@@ -120,7 +122,7 @@ export default function SendFeedback() {
   };
 
   return (
-    <View className="flex-1 mt-safe">
+    <View className="flex-1 mt-safe bg-background">
       <ScrollView
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="interactive"

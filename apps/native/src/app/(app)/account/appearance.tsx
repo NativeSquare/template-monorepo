@@ -62,6 +62,7 @@ export default function AppearanceScreen() {
   return (
     <ScrollView
       keyboardShouldPersistTaps="handled"
+      className="bg-background flex-1"
       contentContainerClassName="mt-safe p-4 pb-10 sm:p-6 gap-6"
       keyboardDismissMode="interactive"
     >
