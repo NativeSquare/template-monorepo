@@ -7,7 +7,7 @@ import { Text } from "@/components/ui/text";
 import { useUploadImage } from "@/hooks/use-upload-image";
 import { getConvexErrorMessage } from "@/utils/getConvexErrorMessage";
 import { FeedbackSchema } from "@/validation/feedback";
-import { api } from "@convex/_generated/api";
+import { api } from "@packages/backend/convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { router } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";

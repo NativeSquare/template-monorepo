@@ -17,7 +17,7 @@ import { useRouter } from "expo-router";
 import * as React from "react";
 import { ActivityIndicator, View } from "react-native";
 import z from "zod";
-import { api } from "../../../convex/_generated/api";
+import { api } from "@packages/backend/convex/_generated/api";
 
 export function ForgotPasswordForm() {
   const [email, setEmail] = React.useState("");

@@ -2,7 +2,7 @@ import "@/lib/nativewind-interop";
 import { ThemeStatusBar } from "@/lib/theme-status-bar";
 import { checkForUpdates } from "@/utils/expo/check-for-updates";
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
-import { api } from "@convex/_generated/api";
+import { api } from "@packages/backend/convex/_generated/api";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { PortalHost } from "@rn-primitives/portal";
 import { ConvexReactClient, useConvexAuth, useQuery } from "convex/react";

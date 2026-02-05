@@ -1,5 +1,5 @@
-import { api } from "@convex/_generated/api";
-import { Id } from "@convex/_generated/dataModel";
+import { api } from "@packages/backend/convex/_generated/api";
+import { Id } from "@packages/backend/convex/_generated/dataModel";
 import { useConvex, useMutation } from "convex/react";
 import * as ImageManipulator from "expo-image-manipulator";
 import React from "react";

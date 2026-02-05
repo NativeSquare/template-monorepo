@@ -4,7 +4,7 @@ import { ConfirmationSheet } from "@/components/shared/confirmation-sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Text } from "@/components/ui/text";
 import { useAuthActions } from "@convex-dev/auth/react";
-import { api } from "@convex/_generated/api";
+import { api } from "@packages/backend/convex/_generated/api";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useMutation, useQuery } from "convex/react";
 import { useRouter } from "expo-router";

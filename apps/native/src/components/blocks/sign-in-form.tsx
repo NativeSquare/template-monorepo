@@ -14,7 +14,7 @@ import { Text } from "@/components/ui/text";
 import { getConvexErrorMessage } from "@/utils/getConvexErrorMessage";
 import { SignInSchema } from "@/validation/auth";
 import { useAuthActions } from "@convex-dev/auth/react";
-import { api } from "@convex/_generated/api";
+import { api } from "@packages/backend/convex/_generated/api";
 import { useConvex } from "convex/react";
 import { useRouter } from "expo-router";
 import * as React from "react";
