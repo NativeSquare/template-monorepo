@@ -8,22 +8,25 @@ import {
   Tailwind,
   Text,
 } from "@react-email/components";
-import { APP_ADDRESS, APP_NAME } from "../../constants";
 
-interface VerifyEmailProps {
+// Inlined from @packages/shared/constants to support React Email preview
+const APP_NAME = "Test Monorepo";
+const APP_ADDRESS = "60 rue François 1er, 75008 Paris, France";
+
+interface ForgotPasswordProps {
   code?: string;
 }
 
-export const VerifyEmail = ({ code }: VerifyEmailProps) => (
+export const ForgotPassword = ({ code }: ForgotPasswordProps) => (
   <Html>
     <Head />
     <Tailwind>
       <Body className="bg-white font-plaid">
-        <Preview>Verify your email</Preview>
+        <Preview>Reset your password</Preview>
         <Container className="px-3 mx-auto">
           <Text className="text-[#51525C] text-sm my-2">Hi there,</Text>
           <Text className="text-[#51525C] text-sm my-2">
-            To verify your email, please use the following code:
+            To reset your password, please use the following code:
           </Text>
           <Text className="text-[#51525C] text-semibold text-3xl my-6">
             <strong data-testid="verification-code">{code}</strong>
@@ -45,8 +48,8 @@ export const VerifyEmail = ({ code }: VerifyEmailProps) => (
   </Html>
 );
 
-VerifyEmail.PreviewProps = {
-  code: "548734",
-} as VerifyEmailProps;
+ForgotPassword.PreviewProps = {
+  code: "128433",
+} as ForgotPasswordProps;
 
-export default VerifyEmail;
+export default ForgotPassword;

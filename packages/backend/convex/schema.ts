@@ -1,11 +1,10 @@
-import { defineSchema, defineTable } from "convex/server";
-import { v } from "convex/values";
+import { authTables } from "@convex-dev/auth/server";
+import { defineSchema } from "convex/server";
+import { feedback } from "./table/feedback";
+import { users } from "./table/users";
 
 export default defineSchema({
-  notes: defineTable({
-    userId: v.string(),
-    title: v.string(),
-    content: v.string(),
-    summary: v.optional(v.string()),
-  }),
+  ...authTables,
+  feedback,
+  users,
 });

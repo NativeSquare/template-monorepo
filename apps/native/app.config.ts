@@ -1,5 +1,5 @@
 import { ConfigContext, ExpoConfig } from "expo/config";
-import { APP_NAME, APP_SLUG } from "./constants";
+import { APP_NAME, APP_SLUG } from "@packages/shared";
 
 const IS_DEV = process.env.APP_VARIANT === "development";
 const IS_PREVIEW = process.env.APP_VARIANT === "preview";
@@ -100,8 +100,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   owner: "nativesquare-expo",
   extra: {
     router: {},
+    eas: {
+      projectId: "7fe40ff2-2a08-4552-bff9-456b82e87956",
+    },
   },
   runtimeVersion: {
     policy: "appVersion",
+  },
+  updates: {
+    url: "https://u.expo.dev/7fe40ff2-2a08-4552-bff9-456b82e87956",
   },
 });
