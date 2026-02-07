@@ -2,7 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
 import { internal } from "../_generated/api";
-import { mutation, MutationCtx, query, QueryCtx } from "../_generated/server";
+import { internalMutation, mutation, MutationCtx, query, QueryCtx } from "../_generated/server";
 import { adminInviteValidator } from "./adminInvites";
 
 /**
@@ -60,6 +60,9 @@ export const currentAdmin = query({
       birthDate: v.optional(v.string()),
       hasCompletedOnboarding: v.optional(v.boolean()),
       role: v.optional(v.union(v.literal("user"), v.literal("admin"))),
+      banned: v.optional(v.boolean()),
+      banReason: v.optional(v.string()),
+      banExpires: v.optional(v.number()),
     }),
     v.null()
   ),
@@ -405,6 +408,9 @@ const userValidator = v.object({
   birthDate: v.optional(v.string()),
   hasCompletedOnboarding: v.optional(v.boolean()),
   role: v.optional(v.union(v.literal("user"), v.literal("admin"))),
+  banned: v.optional(v.boolean()),
+  banReason: v.optional(v.string()),
+  banExpires: v.optional(v.number()),
 });
 
 /**
@@ -509,5 +515,115 @@ export const listAdmins = query({
 
     const allUsers = await ctx.db.query("users").collect();
     return allUsers.filter((user) => user.role === "admin");
+  },
+});
+
+// =============================================================================
+// User Banning
+// =============================================================================
+
+/**
+ * Ban a user, preventing them from signing in and revoking all active sessions.
+ * Optionally specify a reason and expiration duration.
+ */
+export const banUser = mutation({
+  args: {
+    userId: v.id("users"),
+    banReason: v.optional(v.string()),
+    banExpiresIn: v.optional(v.number()), // duration in seconds, undefined = permanent
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const { userId: adminId } = await requireAdmin(ctx);
+
+    // Prevent banning yourself
+    if (args.userId === adminId) {
+      throw new ConvexError({ message: "You cannot ban yourself" });
+    }
+
+    const user = await ctx.db.get(args.userId);
+    if (!user) {
+      throw new ConvexError({ message: "User not found" });
+    }
+
+    // Prevent banning other admins
+    if (user.role === "admin") {
+      throw new ConvexError({ message: "You cannot ban another admin" });
+    }
+
+    // Compute ban expiration timestamp
+    const banExpires = args.banExpiresIn
+      ? Date.now() + args.banExpiresIn * 1000
+      : undefined;
+
+    // Update user with ban fields
+    await ctx.db.patch(args.userId, {
+      banned: true,
+      banReason: args.banReason,
+      banExpires,
+    });
+
+    // Schedule session revocation with a short delay so the client
+    // can detect the ban and show an alert before being signed out
+    await ctx.scheduler.runAfter(
+      3000,
+      internal.table.admin.revokeUserSessions,
+      { userId: args.userId }
+    );
+
+    return null;
+  },
+});
+
+/**
+ * Internal mutation to revoke all sessions for a user.
+ * Used by banUser via scheduler to allow a brief window for the client
+ * to detect the ban before sessions are deleted.
+ */
+export const revokeUserSessions = internalMutation({
+  args: {
+    userId: v.id("users"),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const sessions = await ctx.db
+      .query("authSessions")
+      .withIndex("userId", (q) => q.eq("userId", args.userId))
+      .collect();
+    for (const session of sessions) {
+      await ctx.db.delete(session._id);
+    }
+    return null;
+  },
+});
+
+/**
+ * Remove the ban from a user, allowing them to sign in again.
+ */
+export const unbanUser = mutation({
+  args: {
+    userId: v.id("users"),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+
+    const user = await ctx.db.get(args.userId);
+    if (!user) {
+      throw new ConvexError({ message: "User not found" });
+    }
+
+    if (!user.banned) {
+      throw new ConvexError({ message: "User is not banned" });
+    }
+
+    // Clear all ban fields
+    await ctx.db.patch(args.userId, {
+      banned: undefined,
+      banReason: undefined,
+      banExpires: undefined,
+    });
+
+    return null;
   },
 });

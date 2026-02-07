@@ -19,6 +19,11 @@ const documentSchema = {
   birthDate: v.optional(v.string()),
   hasCompletedOnboarding: v.optional(v.boolean()),
   role: v.optional(v.union(v.literal("user"), v.literal("admin"))),
+
+  // Ban fields
+  banned: v.optional(v.boolean()),
+  banReason: v.optional(v.string()),
+  banExpires: v.optional(v.number()), // timestamp in ms, undefined = permanent
 };
 
 const partialSchema = {
@@ -36,6 +41,11 @@ const partialSchema = {
   birthDate: v.optional(v.string()),
   hasCompletedOnboarding: v.optional(v.boolean()),
   role: v.optional(v.union(v.literal("user"), v.literal("admin"))),
+
+  // Ban fields
+  banned: v.optional(v.boolean()),
+  banReason: v.optional(v.string()),
+  banExpires: v.optional(v.number()),
 };
 
 export const users = defineTable(documentSchema).index("email", ["email"]);

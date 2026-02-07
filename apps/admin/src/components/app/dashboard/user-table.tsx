@@ -31,6 +31,7 @@ import {
 } from "@tabler/icons-react";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -80,6 +81,8 @@ type UserData = {
   image?: string;
   role?: "user" | "admin";
   emailVerificationTime?: number;
+  banned?: boolean;
+  banExpires?: number;
 };
 
 function getInitials(name: string | undefined): string {
@@ -124,13 +127,25 @@ function formatDate(timestamp: number): string {
   });
 }
 
-export function UserTable() {
+interface UserTableProps {
+  /** Base path for user detail links (e.g. "/users" -> "/users/{id}"). Defaults to "/team" */
+  basePath?: string;
+  /** Filter users by role. If set, only users with this role are shown */
+  roleFilter?: "user" | "admin";
+}
+
+export function UserTable({ basePath = "/team", roleFilter }: UserTableProps) {
+  const router = useRouter();
   const {
-    results: users,
+    results: allUsers,
     status,
     loadMore,
     isLoading,
   } = usePaginatedQuery(api.table.admin.listUsers, {}, { initialNumItems: 50 });
+
+  const users = roleFilter
+    ? allUsers.filter((u) => (u.role ?? "user") === roleFilter)
+    : allUsers;
 
   const deleteUser = useMutation(api.table.admin.deleteUser);
   const updateUser = useMutation(api.table.admin.updateUser);
@@ -139,7 +154,9 @@ export function UserTable() {
   const [userToDelete, setUserToDelete] = React.useState<Id<"users"> | null>(null);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>(
+    roleFilter ? { role: false } : {}
+  );
   const [globalFilter, setGlobalFilter] = React.useState("");
 
   const handleDelete = async () => {
@@ -192,7 +209,11 @@ export function UserTable() {
         accessorKey: "email",
         header: "Email",
         cell: ({ row }) => (
-          <Link href={`mailto:${row.original.email}`} className="text-blue-600 hover:underline">
+          <Link
+            href={`mailto:${row.original.email}`}
+            className="text-blue-600 hover:underline"
+            onClick={(e) => e.stopPropagation()}
+          >
             {row.original.email || "—"}
           </Link>
         ),
@@ -209,8 +230,21 @@ export function UserTable() {
       {
         id: "status",
         header: "Status",
-        cell: ({ row }) =>
-          row.original.emailVerificationTime ? (
+        cell: ({ row }) => {
+          const isBanned =
+            row.original.banned &&
+            (!row.original.banExpires || row.original.banExpires > Date.now());
+
+          if (isBanned) {
+            return (
+              <Badge variant="outline" className="border-red-200 bg-red-50 text-red-700">
+                <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-red-500" />
+                Banned
+              </Badge>
+            );
+          }
+
+          return row.original.emailVerificationTime ? (
             <Badge variant="outline" className="border-green-200 bg-green-50 text-green-700">
               <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-green-500" />
               Active
@@ -220,7 +254,8 @@ export function UserTable() {
               <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-gray-400" />
               Inactive
             </Badge>
-          ),
+          );
+        },
       },
       {
         accessorKey: "_creationTime",
@@ -232,12 +267,13 @@ export function UserTable() {
       {
         id: "actions",
         cell: ({ row }) => (
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
                 size="icon"
+                onClick={(e) => e.stopPropagation()}
               >
                 <IconDotsVertical />
                 <span className="sr-only">Open menu</span>
@@ -245,7 +281,7 @@ export function UserTable() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40">
               <DropdownMenuItem asChild>
-                <Link href={`/team/${row.original._id}`}>
+                <Link href={`${basePath}/${row.original._id}`}>
                   <IconEdit className="mr-2 h-4 w-4" />
                   Edit
                 </Link>
@@ -306,9 +342,9 @@ export function UserTable() {
     if (isNearEnd && status === "CanLoadMore") {
       loadMore(50);
     }
-  }, [table.getState().pagination, users.length, status, loadMore]);
+  }, [table.getState().pagination, users.length, allUsers.length, status, loadMore]);
 
-  if (isLoading && users.length === 0) {
+  if (isLoading && allUsers.length === 0) {
     return (
       <div className="flex h-64 items-center justify-center">
         <Spinner className="h-8 w-8" />
@@ -377,7 +413,12 @@ export function UserTable() {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className="cursor-pointer"
+                  onClick={() => router.push(`${basePath}/${row.original._id}`)}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}

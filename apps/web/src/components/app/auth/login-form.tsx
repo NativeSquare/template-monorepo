@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
@@ -10,19 +10,19 @@ import {
   FieldGroup,
   FieldLabel,
   FieldSeparator,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { PasswordInput } from "@/components/custom/password-input"
-import { useAuthActions } from "@convex-dev/auth/react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Controller, useForm } from "react-hook-form"
-import { useConvex } from "convex/react"
-import * as z from "zod"
-import { api } from "@packages/backend/convex/_generated/api"
-import { useRouter } from "next/navigation"
-import * as React from "react"
-import { getConvexErrorMessage } from "@/utils/getConvexErrorMessage"
-import { Spinner } from "@/components/ui/spinner"
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/custom/password-input";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+import { useConvex } from "convex/react";
+import * as z from "zod";
+import { api } from "@packages/backend/convex/_generated/api";
+import { useRouter } from "next/navigation";
+import * as React from "react";
+import { getConvexErrorMessage } from "@/utils/getConvexErrorMessage";
+import { Spinner } from "@/components/ui/spinner";
 
 const formSchema = z.object({
   email: z
@@ -30,7 +30,7 @@ const formSchema = z.object({
     .min(1, "Email is required")
     .email("Please enter a valid email address"),
   password: z.string().min(1, "Password is required"),
-})
+});
 
 export function LoginForm({
   className,
@@ -47,7 +47,7 @@ export function LoginForm({
       email: "",
       password: "",
     },
-  })
+  });
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     const user = await convex.query(api.table.users.getUserByEmail, {
@@ -77,8 +77,11 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-
-          <form className="p-6 md:p-8" id="form-login" onSubmit={form.handleSubmit(onSubmit)}>
+          <form
+            className="p-6 md:p-8"
+            id="form-login"
+            onSubmit={form.handleSubmit(onSubmit)}
+          >
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Welcome back</h1>
@@ -87,48 +90,53 @@ export function LoginForm({
                 </p>
               </div>
               {formError && (
-          <div className="text-destructive self-center">{formError}</div>
-        )}
+                <div className="text-destructive self-center">{formError}</div>
+              )}
               <Controller
-              name="email"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input
-                  {...field}
-                  id="email"
-                  aria-invalid={fieldState.invalid}
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                />
-                {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-              </Field>
-              )}
+                name="email"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="email">Email</FieldLabel>
+                    <Input
+                      {...field}
+                      id="email"
+                      aria-invalid={fieldState.invalid}
+                      type="email"
+                      placeholder="m@example.com"
+                      required
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
               />
-               <Controller
-              name="password"
-              control={form.control}
-              render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <div className="flex items-center">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <a
-                    href="/forgot-password"
-                    className="ml-auto text-sm underline-offset-2 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
-                </div>
-                <PasswordInput {...field} id="password" aria-invalid={fieldState.invalid} required />
-                {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-              </Field>
-              )}
+              <Controller
+                name="password"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <div className="flex items-center">
+                      <FieldLabel htmlFor="password">Password</FieldLabel>
+                      <a
+                        href="/forgot-password"
+                        className="ml-auto text-sm underline-offset-2 hover:underline"
+                      >
+                        Forgot your password?
+                      </a>
+                    </div>
+                    <PasswordInput
+                      {...field}
+                      id="password"
+                      aria-invalid={fieldState.invalid}
+                      required
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
               />
               <Field>
                 <Button type="submit" form="form-login" disabled={isLoading}>
@@ -186,5 +194,5 @@ export function LoginForm({
         and <a href="#">Privacy Policy</a>.
       </FieldDescription>
     </div>
-  )
+  );
 }

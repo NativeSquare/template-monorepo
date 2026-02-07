@@ -68,6 +68,16 @@ export function SignInForm() {
       return;
     }
 
+    // Check if user is banned
+    if (user.banned) {
+      if (!user.banExpires || user.banExpires > Date.now()) {
+        setFormError(
+          "Your account has been suspended. Contact support for assistance."
+        );
+        return;
+      }
+    }
+
     // Submit
     setIsLoading(true);
     try {

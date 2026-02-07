@@ -31,6 +31,15 @@ import {
 import { useAuthActions } from "@convex-dev/auth/react"
 import { useRouter } from "next/navigation"
 
+function getInitials(name: string): string {
+  if (!name) return "U"
+  const parts = name.split(" ")
+  if (parts.length >= 2) {
+    return `${parts[0][0]}${parts[1][0]}`.toUpperCase()
+  }
+  return name.slice(0, 2).toUpperCase()
+}
+
 export function NavUser({
   user,
 }: {
@@ -49,6 +58,8 @@ export function NavUser({
     router.push("/login")
   }
 
+  const initials = getInitials(user.name)
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -58,9 +69,11 @@ export function NavUser({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg grayscale">
+              <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg bg-primary text-primary-foreground">
+                  {initials}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
@@ -81,7 +94,9 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg bg-primary text-primary-foreground">
+                    {initials}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>

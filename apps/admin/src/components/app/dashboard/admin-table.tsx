@@ -21,6 +21,7 @@ import {
 } from "@tabler/icons-react";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -106,6 +107,7 @@ function formatDate(timestamp: number): string {
 }
 
 export function AdminTable() {
+  const router = useRouter();
   const admins = useQuery(api.table.admin.listAdmins);
   const deleteUser = useMutation(api.table.admin.deleteUser);
 
@@ -154,7 +156,11 @@ export function AdminTable() {
         accessorKey: "email",
         header: "Email",
         cell: ({ row }) => (
-          <Link href={`mailto:${row.original.email}`} className="text-blue-600 hover:underline">
+          <Link
+            href={`mailto:${row.original.email}`}
+            className="text-blue-600 hover:underline"
+            onClick={(e) => e.stopPropagation()}
+          >
             {row.original.email || "—"}
           </Link>
         ),
@@ -185,12 +191,13 @@ export function AdminTable() {
       {
         id: "actions",
         cell: ({ row }) => (
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
                 size="icon"
+                onClick={(e) => e.stopPropagation()}
               >
                 <IconDotsVertical />
                 <span className="sr-only">Open menu</span>
@@ -277,7 +284,12 @@ export function AdminTable() {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className="cursor-pointer"
+                  onClick={() => router.push(`/team/${row.original._id}`)}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}

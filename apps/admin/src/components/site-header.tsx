@@ -19,7 +19,11 @@ export function SiteHeader() {
   const getBreadcrumbs = () => {
     const segments = pathname.split("/").filter(Boolean)
 
-    if (segments.length === 0 || segments[0] === "team") {
+    if (segments.length === 0) {
+      return [{ label: "General", href: "/", isCurrentPage: true }]
+    }
+
+    if (segments[0] === "team") {
       if (segments.length === 1) {
         return [{ label: "Team", href: "/team", isCurrentPage: true }]
       }
@@ -27,6 +31,18 @@ export function SiteHeader() {
         return [
           { label: "Team", href: "/team", isCurrentPage: false },
           { label: "Member Details", href: pathname, isCurrentPage: true },
+        ]
+      }
+    }
+
+    if (segments[0] === "users") {
+      if (segments.length === 1) {
+        return [{ label: "Users", href: "/users", isCurrentPage: true }]
+      }
+      if (segments.length === 2) {
+        return [
+          { label: "Users", href: "/users", isCurrentPage: false },
+          { label: "User Details", href: pathname, isCurrentPage: true },
         ]
       }
     }

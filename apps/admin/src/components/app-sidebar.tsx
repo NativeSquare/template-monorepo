@@ -8,6 +8,7 @@ import { api } from "@packages/backend/convex/_generated/api"
 import {
   IconInnerShadowTop,
   IconUsers,
+  IconUsersGroup,
 } from "@tabler/icons-react"
 
 import { NavUser } from "@/components/nav-user"
@@ -25,6 +26,11 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 
 const navGeneral = [
+  {
+    title: "Users",
+    url: "/users",
+    icon: IconUsersGroup,
+  },
   {
     title: "Team",
     url: "/team",

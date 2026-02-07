@@ -14,6 +14,8 @@ import {
   IconUserShield,
   IconUser,
   IconTrash,
+  IconBan,
+  IconLockOpen,
 } from "@tabler/icons-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -51,16 +53,25 @@ const formSchema = z.object({
 
 interface UserDetailProps {
   userId: Id<"users">;
+  /** Path to navigate back to. Defaults to "/team" */
+  backPath?: string;
 }
 
-export function UserDetail({ userId }: UserDetailProps) {
+export function UserDetail({ userId, backPath = "/team" }: UserDetailProps) {
   const router = useRouter();
   const user = useQuery(api.table.admin.getUser, { userId });
   const updateUser = useMutation(api.table.admin.updateUser);
   const deleteUser = useMutation(api.table.admin.deleteUser);
+  const banUser = useMutation(api.table.admin.banUser);
+  const unbanUser = useMutation(api.table.admin.unbanUser);
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
+  const [isBanning, setIsBanning] = React.useState(false);
+  const [isUnbanning, setIsUnbanning] = React.useState(false);
+  const [banDialogOpen, setBanDialogOpen] = React.useState(false);
+  const [banReason, setBanReason] = React.useState("");
+  const [banDuration, setBanDuration] = React.useState("permanent");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -108,7 +119,7 @@ export function UserDetail({ userId }: UserDetailProps) {
     try {
       await deleteUser({ userId });
       toast.success("User deleted successfully");
-      router.push("/team");
+      router.push(backPath);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Failed to delete user"
@@ -116,6 +127,50 @@ export function UserDetail({ userId }: UserDetailProps) {
       setIsDeleting(false);
     }
   };
+
+  const handleBan = async () => {
+    setIsBanning(true);
+    try {
+      const durationMap: Record<string, number | undefined> = {
+        permanent: undefined,
+        "1d": 60 * 60 * 24,
+        "7d": 60 * 60 * 24 * 7,
+        "30d": 60 * 60 * 24 * 30,
+      };
+      await banUser({
+        userId,
+        banReason: banReason || undefined,
+        banExpiresIn: durationMap[banDuration],
+      });
+      toast.success("User has been banned");
+      setBanDialogOpen(false);
+      setBanReason("");
+      setBanDuration("permanent");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to ban user"
+      );
+    } finally {
+      setIsBanning(false);
+    }
+  };
+
+  const handleUnban = async () => {
+    setIsUnbanning(true);
+    try {
+      await unbanUser({ userId });
+      toast.success("User has been unbanned");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to unban user"
+      );
+    } finally {
+      setIsUnbanning(false);
+    }
+  };
+
+  const isBanned =
+    user?.banned && (!user.banExpires || user.banExpires > Date.now());
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleDateString("en-US", {
@@ -139,9 +194,9 @@ export function UserDetail({ userId }: UserDetailProps) {
     return (
       <div className="flex h-64 flex-col items-center justify-center gap-4">
         <p className="text-muted-foreground">User not found</p>
-        <Button variant="outline" onClick={() => router.push("/team")}>
+        <Button variant="outline" onClick={() => router.push(backPath)}>
           <IconArrowLeft className="mr-2 h-4 w-4" />
-          Back to Team
+          Back
         </Button>
       </div>
     );
@@ -153,7 +208,7 @@ export function UserDetail({ userId }: UserDetailProps) {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => router.push("/team")}
+          onClick={() => router.push(backPath)}
         >
           <IconArrowLeft className="h-4 w-4" />
         </Button>
@@ -161,17 +216,25 @@ export function UserDetail({ userId }: UserDetailProps) {
           <h1 className="text-2xl font-bold">{user.name || "Unnamed User"}</h1>
           <p className="text-muted-foreground text-sm">{user.email}</p>
         </div>
-        <Badge
-          variant={user.role === "admin" ? "default" : "outline"}
-          className="capitalize"
-        >
-          {user.role === "admin" ? (
-            <IconUserShield className="mr-1 h-3 w-3" />
-          ) : (
-            <IconUser className="mr-1 h-3 w-3" />
+        <div className="flex items-center gap-2">
+          {isBanned && (
+            <Badge variant="destructive">
+              <IconBan className="mr-1 h-3 w-3" />
+              Banned
+            </Badge>
           )}
-          {user.role || "user"}
-        </Badge>
+          <Badge
+            variant={user.role === "admin" ? "default" : "outline"}
+            className="capitalize"
+          >
+            {user.role === "admin" ? (
+              <IconUserShield className="mr-1 h-3 w-3" />
+            ) : (
+              <IconUser className="mr-1 h-3 w-3" />
+            )}
+            {user.role || "user"}
+          </Badge>
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
@@ -269,6 +332,128 @@ export function UserDetail({ userId }: UserDetailProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Moderation */}
+      {user.role !== "admin" && (
+        <Card className={isBanned ? "border-destructive" : ""}>
+          <CardHeader>
+            <CardTitle>Moderation</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isBanned ? (
+              <div className="space-y-4">
+                <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 space-y-2">
+                  <p className="text-sm font-medium text-destructive">
+                    This user is currently banned
+                  </p>
+                  {user.banReason && (
+                    <p className="text-sm text-muted-foreground">
+                      <span className="font-medium">Reason:</span>{" "}
+                      {user.banReason}
+                    </p>
+                  )}
+                  <p className="text-sm text-muted-foreground">
+                    <span className="font-medium">Expires:</span>{" "}
+                    {user.banExpires
+                      ? formatDate(user.banExpires)
+                      : "Permanent"}
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={handleUnban}
+                  disabled={isUnbanning}
+                >
+                  {isUnbanning ? (
+                    <Spinner className="mr-2 h-4 w-4" />
+                  ) : (
+                    <IconLockOpen className="mr-2 h-4 w-4" />
+                  )}
+                  Unban User
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Ban User</p>
+                  <p className="text-muted-foreground text-sm">
+                    Prevent this user from signing in and revoke all their
+                    sessions.
+                  </p>
+                </div>
+                <AlertDialog
+                  open={banDialogOpen}
+                  onOpenChange={setBanDialogOpen}
+                >
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive">
+                      <IconBan className="mr-2 h-4 w-4" />
+                      Ban User
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Ban User</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will prevent the user from signing in and revoke all
+                        their active sessions immediately.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <div className="space-y-4 py-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="ban-reason">
+                          Reason{" "}
+                          <span className="text-muted-foreground">
+                            (optional)
+                          </span>
+                        </Label>
+                        <Input
+                          id="ban-reason"
+                          placeholder="e.g. Spamming, Abuse, etc."
+                          value={banReason}
+                          onChange={(e) => setBanReason(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="ban-duration">Duration</Label>
+                        <Select
+                          value={banDuration}
+                          onValueChange={setBanDuration}
+                        >
+                          <SelectTrigger id="ban-duration">
+                            <SelectValue placeholder="Select duration" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="permanent">
+                              Permanent
+                            </SelectItem>
+                            <SelectItem value="1d">1 day</SelectItem>
+                            <SelectItem value="7d">7 days</SelectItem>
+                            <SelectItem value="30d">30 days</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleBan}
+                        disabled={isBanning}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        {isBanning ? (
+                          <Spinner className="mr-2 h-4 w-4" />
+                        ) : null}
+                        Confirm Ban
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Danger Zone */}
       <Card className="border-destructive">

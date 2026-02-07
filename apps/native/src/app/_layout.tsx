@@ -1,7 +1,7 @@
 import "@/lib/nativewind-interop";
 import { ThemeStatusBar } from "@/lib/theme-status-bar";
 import { checkForUpdates } from "@/utils/expo/check-for-updates";
-import { ConvexAuthProvider } from "@convex-dev/auth/react";
+import { ConvexAuthProvider, useAuthActions } from "@convex-dev/auth/react";
 import { api } from "@packages/backend/convex/_generated/api";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { PortalHost } from "@rn-primitives/portal";
@@ -10,7 +10,7 @@ import { Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { useColorScheme } from "nativewind";
 import { useEffect } from "react";
-import { ActivityIndicator, Platform, View } from "react-native";
+import { ActivityIndicator, Alert, Platform, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -59,8 +59,25 @@ export default function RootLayout() {
 function RootStack() {
   const { colorScheme } = useColorScheme();
   const { isAuthenticated, isLoading } = useConvexAuth();
+  const { signOut } = useAuthActions();
   const user = useQuery(api.table.users.currentUser);
   const hasCompletedOnboarding = user?.hasCompletedOnboarding ?? false;
+
+  // Detect banned users and show alert before signing them out
+  const isBanned =
+    user?.banned && (!user.banExpires || user.banExpires > Date.now());
+
+  useEffect(() => {
+    if (isAuthenticated && isBanned) {
+      Alert.alert(
+        "Account Suspended",
+        user?.banReason
+          ? `Your account has been suspended: ${user.banReason}. Contact support if you believe this is an error.`
+          : "Your account has been suspended. Contact support if you believe this is an error.",
+        [{ text: "OK", onPress: () => signOut() }]
+      );
+    }
+  }, [isAuthenticated, isBanned]);
 
   if (isLoading) {
     return (
