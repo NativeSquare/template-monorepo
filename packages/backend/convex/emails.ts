@@ -1,11 +1,11 @@
 "use node";
 
 import { Resend } from "@convex-dev/resend";
-import { render } from "@react-email/render";
 import { internalAction } from "./_generated/server";
 import { components } from "./_generated/api";
 import { v } from "convex/values";
-import { APP_DOMAIN, APP_NAME } from "@packages/shared/constants";
+import { APP_ADDRESS, APP_DOMAIN, APP_NAME } from "@packages/shared/constants";
+import { renderAdminInviteHtml } from "@packages/transactional";
 
 // Initialize the Resend component
 // Set testMode: false when ready for production
@@ -42,10 +42,8 @@ export const sendEmail = internalAction({
 });
 
 // =============================================================================
-// Admin Invite Email
+// Admin Invite Email (plain HTML – no React rendering in Node)
 // =============================================================================
-
-import { AdminInviteEmail } from "@packages/transactional";
 
 export const sendAdminInviteEmail = internalAction({
   args: {
@@ -64,11 +62,9 @@ export const sendAdminInviteEmail = internalAction({
       return "dev-email-id";
     }
 
-    const html = await render(
-      AdminInviteEmail({
-        name: args.name,
-        inviteUrl,
-      })
+    const html = renderAdminInviteHtml(
+      { name: args.name, inviteUrl },
+      { appName: APP_NAME, appAddress: APP_ADDRESS }
     );
 
     const emailId = await resend.sendEmail(ctx, {

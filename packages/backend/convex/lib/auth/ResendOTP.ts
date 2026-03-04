@@ -1,7 +1,7 @@
 import { Email } from "@convex-dev/auth/providers/Email";
 import { alphabet, generateRandomString } from "oslo/crypto";
-import { VerifyEmail } from "@packages/transactional";
-import { APP_DOMAIN, APP_NAME } from "@packages/shared/constants";
+import { renderVerifyEmailHtml } from "@packages/transactional";
+import { APP_ADDRESS, APP_DOMAIN, APP_NAME } from "@packages/shared/constants";
 import { Resend as ResendAPI } from "resend";
 
 export const ResendOTP = Email({
@@ -21,11 +21,16 @@ export const ResendOTP = Email({
       return;
     }
 
+    const html = renderVerifyEmailHtml(
+      { code: token },
+      { appName: APP_NAME, appAddress: APP_ADDRESS }
+    );
+
     const { error } = await resend.emails.send({
       from: `${APP_NAME} <no-reply@${APP_DOMAIN}>`,
       to: [email],
       subject: "Verify your email",
-      react: VerifyEmail({ code: token }),
+      html,
     });
 
     if (error) {
