@@ -75,11 +75,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     "expo-camera",
+    "expo-image",
     "expo-image-picker",
     "expo-media-library",
     "expo-notifications",
     "expo-router",
     "expo-secure-store",
+    "expo-web-browser",
     [
       "expo-splash-screen",
       {
