@@ -48,9 +48,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   icon: "./assets/images/icon.png",
   scheme: APP_SLUG,
   userInterfaceStyle: "automatic",
-  newArchEnabled: true,
   ios: {
-    supportsTablet: true,
+    supportsTablet: false,
     bundleIdentifier: getUniqueIdentifier(),
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
@@ -64,7 +63,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       backgroundImage: "./assets/images/android-icon-background.png",
       monochromeImage: "./assets/images/android-icon-monochrome.png",
     },
-    edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
     // googleServicesFile: getGoogleServicesJson(),
   },
@@ -102,14 +100,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   owner: "nativesquare-expo",
   extra: {
     router: {},
-    eas: {
-      projectId: "7fe40ff2-2a08-4552-bff9-456b82e87956",
-    },
   },
   runtimeVersion: {
     policy: "appVersion",
-  },
-  updates: {
-    url: "https://u.expo.dev/7fe40ff2-2a08-4552-bff9-456b82e87956",
   },
 });
