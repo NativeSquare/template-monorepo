@@ -1,190 +1,178 @@
-# Fullstack monorepo template feat. Expo, Turbo, Next.js, Convex, Clerk
+# NativeSquare Template Monorepo
 
-This is a modern TypeScript monorepo template with AI web and native apps
-featuring:
+A private monorepo template used by NativeSquare to bootstrap greenfield projects.
 
-- Turborepo: Monorepo management
-- React 19: Latest React with concurrent features
-- Next.js 16: Web app & marketing page with App Router
-- Tailwind CSS v4: Modern CSS-first configuration
-- React Native [Expo](https://expo.dev/): Mobile/native app with New Architecture
-- [Convex](https://convex.dev): Backend, database, server functions
-- [Clerk](https://clerk.dev): User authentication
-- OpenAI: Text summarization (optional)
+## Tech Stack
 
-The example app is a note taking app that can summarize notes using AI. Features
-include:
+- **Monorepo**: [Turborepo](https://turbo.build/) + [pnpm](https://pnpm.io/) workspaces
+- **Web & Admin**: [Next.js 16](https://nextjs.org/) (App Router), [React 19](https://react.dev/), [Tailwind CSS v4](https://tailwindcss.com/)
+- **Mobile**: [Expo](https://expo.dev/) (SDK 55), [React Native](https://reactnative.dev/), [NativeWind](https://www.nativewind.dev/)
+- **Backend & Database**: [Convex](https://convex.dev/)
+- **Authentication**: [Convex Auth](https://labs.convex.dev/auth)
+- **Email**: [Resend](https://resend.com/) + [React Email](https://react.email/)
+- **Language**: TypeScript everywhere, end-to-end type safety
 
-- Marketing page
-- Dashboard page (web & native)
-- Note taking page (web & native)
-- Backend API that serves web & native with the same API
-- Relational database
-- End to end type safety (schema definition to frontend API clients)
-- User authentication
-- Asynchronous call to an OpenAI
-- Everything is realtime by default
+## Project Structure
 
-## Using this example
-
-### 1. Install dependencies
-
-If you don't have `yarn` installed, run `npm install --global yarn`.
-
-Run `yarn`.
-
-### 2. Configure Convex
-
-> Note: The following command will print an error and ask you to add the
-> appropriate environment variable to proceed. Continue reading on for how to do
-> that.
-
-```sh
-npm run setup --workspace packages/backend
+```text
+├── apps/
+│   ├── web/            # Next.js web app
+│   ├── admin/          # Next.js admin panel
+│   └── native/         # Expo React Native app
+├── packages/
+│   ├── backend/        # Convex backend (schema, functions, auth)
+│   ├── shared/         # Shared constants (app name, slug, etc.)
+│   └── transactional/  # React Email templates
+├── scripts/            # Utility scripts (deploy preview, etc.)
+├── turbo.json          # Turborepo task configuration
+└── pnpm-workspace.yaml # Workspace definition
 ```
 
-The script will log you into Convex if you aren't already and prompt you to
-create a project (free). It will then wait to deploy your code until you set the
-environment variables in the dashboard.
+## Bootstrapping a New Project
 
-Configure Clerk with [this guide](https://docs.convex.dev/auth/clerk). Then add
-the `CLERK_ISSUER_URL` found in the "convex" template
-[here](https://dashboard.clerk.com/last-active?path=jwt-templates), to your
-Convex environment variables
-[here](https://dashboard.convex.dev/deployment/settings/environment-variables&var=CLERK_ISSUER_URL).
+### 1. Create and clone the repo
 
-Make sure to enable **Google and Apple** as possible Social Connection
-providers, as these are used by the React Native login implementation.
-
-After that, optionally add the `OPENAI_API_KEY` env var from
-[OpenAI](https://platform.openai.com/account/api-keys) to your Convex
-environment variables to get AI summaries.
-
-The `setup` command should now finish successfully.
-
-### 3. Configure both apps
-
-In each app directory (`apps/web`, `apps/native`) create a `.env.local` file
-using the `.example.env` as a template and fill out your Convex and Clerk
-environment variables.
-
-- Use the `CONVEX_URL` from `packages/backend/.env.local` for
-  `{NEXT,EXPO}_PUBLIC_CONVEX_URL`.
-- The Clerk publishable & secret keys can be found
-  [here](https://dashboard.clerk.com/last-active?path=api-keys).
-
-### 4. Run both apps
-
-Run the following command to run both the web and mobile apps:
+Create a new GitHub repository from this template, then clone it and navigate into it:
 
 ```sh
-npm run dev
+git clone <your-new-repo-url>
+cd <your-new-repo>
 ```
 
-This will allow you to use the ⬆ and ⬇ keyboard keys to see logs for each
-of the Convex backend, web app, and mobile app separately.
-If you'd rather see all of the logs in one place, delete the
-`"ui": "tui",` line in [turbo.json](./turbo.json).
-
-## Deploying
-
-In order to both deploy the frontend and Convex, run this as the build command from the apps/web directory:
+### 2. Install dependencies
 
 ```sh
-cd ../../packages/backend && npx convex deploy --cmd 'cd ../../apps/web && turbo run build' --cmd-url-env-var-name NEXT_PUBLIC_CONVEX_URL
+pnpm install
 ```
 
-There is a vercel.json file in the apps/web directory with this configuration for Vercel.
+### 3. Connect the backend to Convex
 
-## What's inside?
+```sh
+cd packages/backend
+npx convex dev
+```
 
-This monorepo template includes the following packages/apps:
+You will be prompted to create a new Convex project or link an existing one. Once connected, the Convex dev server will start and generate a `.env.local` file in `packages/backend/` containing your `CONVEX_URL`.
 
-### Apps and Packages
+### 4. Set up environment variables for the apps
 
-- `web`: a [Next.js 15](https://nextjs.org/) app with Tailwind CSS and Clerk
-- `native`: a [React Native](https://reactnative.dev/) app built with
-  [expo](https://docs.expo.dev/)
-- `packages/backend`: a [Convex](https://www.convex.dev/) folder with the
-  database schema and shared functions
+Create a `.env.local` file in each app directory (`apps/web`, `apps/admin`, `apps/native`) with the same Convex URL from `packages/backend/.env.local`, but prefixed for each platform:
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+**`apps/web/.env.local`** and **`apps/admin/.env.local`**:
 
-To install a new package, `cd` into that directory, such as [packages/backend](./packages/backend/), and then run `yarn add mypackage@latest`
+```env
+NEXT_PUBLIC_CONVEX_URL=<your-convex-url>
+```
 
-### Utilities
+**`apps/native/.env.local`**:
 
-This Turborepo has some additional tools already setup for you:
+```env
+EXPO_PUBLIC_CONVEX_URL=<your-convex-url>
+```
 
-- [Expo](https://docs.expo.dev/) for native development
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [Prettier](https://prettier.io) for code formatting
+### 5. Configure authentication
 
-# What is Convex?
+Convex Auth requires a Resend API key and a JWT key pair.
 
-[Convex](https://convex.dev) is a hosted backend platform with a built-in
-reactive database that lets you write your
-[database schema](https://docs.convex.dev/database/schemas) and
-[server functions](https://docs.convex.dev/functions) in
-[TypeScript](https://docs.convex.dev/typescript). Server-side database
-[queries](https://docs.convex.dev/functions/query-functions) automatically
-[cache](https://docs.convex.dev/functions/query-functions#caching--reactivity)
-and [subscribe](https://docs.convex.dev/client/react#reactivity) to data,
-powering a
-[realtime `useQuery` hook](https://docs.convex.dev/client/react#fetching-data)
-in our [React client](https://docs.convex.dev/client/react). There are also
-clients for [Python](https://docs.convex.dev/client/python),
-[Rust](https://docs.convex.dev/client/rust),
-[ReactNative](https://docs.convex.dev/client/react-native), and
-[Node](https://docs.convex.dev/client/javascript), as well as a straightforward
-[HTTP API](https://github.com/get-convex/convex-js/blob/main/src/browser/http_client.ts#L40).
+#### a. Create a Resend API key
 
-The database supports
-[NoSQL-style documents](https://docs.convex.dev/database/document-storage) with
-[relationships](https://docs.convex.dev/database/document-ids) and
-[custom indexes](https://docs.convex.dev/database/indexes/) (including on fields
-in nested objects).
+Go to the [NativeSquare Resend account](https://resend.com/api-keys) and create a new API key.
 
-The [`query`](https://docs.convex.dev/functions/query-functions) and
-[`mutation`](https://docs.convex.dev/functions/mutation-functions) server
-functions have transactional, low latency access to the database and leverage
-our [`v8` runtime](https://docs.convex.dev/functions/runtimes) with
-[determinism guardrails](https://docs.convex.dev/functions/runtimes#using-randomness-and-time-in-queries-and-mutations)
-to provide the strongest ACID guarantees on the market: immediate consistency,
-serializable isolation, and automatic conflict resolution via
-[optimistic multi-version concurrency control](https://docs.convex.dev/database/advanced/occ)
-(OCC / MVCC).
+#### b. Add the Resend key to Convex
 
-The [`action` server functions](https://docs.convex.dev/functions/actions) have
-access to external APIs and enable other side-effects and non-determinism in
-either our [optimized `v8` runtime](https://docs.convex.dev/functions/runtimes)
-or a more
-[flexible `node` runtime](https://docs.convex.dev/functions/runtimes#nodejs-runtime).
+In the [Convex dashboard](https://dashboard.convex.dev), go to your **Development** deployment's environment variables and add:
 
-Functions can run in the background via
-[scheduling](https://docs.convex.dev/scheduling/scheduled-functions) and
-[cron jobs](https://docs.convex.dev/scheduling/cron-jobs).
+```sh
+AUTH_RESEND_KEY=<your-resend-api-key>
+```
 
-Development is cloud-first, with
-[hot reloads for server function](https://docs.convex.dev/cli#run-the-convex-dev-server)
-editing via the [CLI](https://docs.convex.dev/cli). There is a
-[dashboard UI](https://docs.convex.dev/dashboard) to
-[browse and edit data](https://docs.convex.dev/dashboard/deployments/data),
-[edit environment variables](https://docs.convex.dev/production/environment-variables),
-[view logs](https://docs.convex.dev/dashboard/deployments/logs),
-[run server functions](https://docs.convex.dev/dashboard/deployments/functions),
-and more.
+#### c. Generate JWT keys
 
-There are built-in features for
-[reactive pagination](https://docs.convex.dev/database/pagination),
-[file storage](https://docs.convex.dev/file-storage),
-[reactive search](https://docs.convex.dev/text-search),
-[https endpoints](https://docs.convex.dev/functions/http-actions) (for
-webhooks),
-[streaming import/export](https://docs.convex.dev/database/import-export/), and
-[runtime data validation](https://docs.convex.dev/database/schemas#validators)
-for [function arguments](https://docs.convex.dev/functions/args-validation) and
-[database data](https://docs.convex.dev/database/schemas#schema-validation).
+```sh
+cd packages/backend
+node generateKeys.mjs
+```
 
-Everything scales automatically, and it’s
-[free to start](https://www.convex.dev/plans).
+This will output two environment variables: `JWT_PRIVATE_KEY` and `JWKS`. Copy both and add them as environment variables in your Convex Development deployment.
+
+#### d. Add the site URL
+
+Add one more environment variable in the Convex dashboard:
+
+```sh
+SITE_URL=http://localhost:3000
+```
+
+You should now have **four** environment variables in your Convex Development deployment:
+
+| Variable          | Source                     |
+| ----------------- | -------------------------- |
+| `AUTH_RESEND_KEY` | Resend dashboard           |
+| `JWT_PRIVATE_KEY` | Output of generateKeys.mjs |
+| `JWKS`            | Output of generateKeys.mjs |
+| `SITE_URL`        | `http://localhost:3000`    |
+
+At this point, the **web** and **admin** apps are ready to go.
+
+### 6. Set up the native app (Expo / EAS)
+
+#### a. Initialize EAS
+
+```sh
+cd apps/native
+eas init
+```
+
+When asked if you want to create a new project, select **yes**. The CLI won't be able to automatically write to `app.config.ts`, so you'll need to manually paste the output (project ID / slug) into [apps/native/app.config.ts](apps/native/app.config.ts) yourself.
+
+#### b. Configure EAS Update
+
+```sh
+eas update:configure
+```
+
+Again, manually paste the output into [apps/native/app.config.ts](apps/native/app.config.ts).
+
+#### c. Create a development build
+
+Create a development build with EAS and you're good to go:
+
+```sh
+eas build --profile development --platform <ios|android>
+```
+
+### 7. Run the apps
+
+From the root of the monorepo:
+
+```sh
+pnpm dev
+```
+
+This starts the Convex backend, web app, admin panel, and native dev server via Turborepo. Use the arrow keys to switch between logs for each process.
+
+## Preview Deployments
+
+To set up preview deployments, you need a Convex preview deploy key:
+
+1. Go to your project's settings in the [Convex dashboard](https://dashboard.convex.dev)
+2. Create a **preview deploy key**
+3. Create a file `packages/backend/.env.preview` and add the key:
+
+```sh
+CONVEX_DEPLOY_KEY=<your-preview-deploy-key>
+```
+
+You can then run `pnpm deploy:preview` from the root to trigger a preview deployment.
+
+## Useful Commands
+
+| Command              | Description                              |
+| -------------------- | ---------------------------------------- |
+| `pnpm dev`           | Start all apps and backend in dev mode   |
+| `pnpm build`         | Build all apps                           |
+| `pnpm lint`          | Lint all packages                        |
+| `pnpm typecheck`     | Type-check all packages                  |
+| `pnpm clean`         | Clean build artifacts and `node_modules` |
+| `pnpm format`        | Format code with Prettier                |
+| `pnpm deploy:preview`| Deploy a preview build                   |
