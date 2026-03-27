@@ -18,7 +18,7 @@ export default function Home() {
           Your Home Screen
         </Text>
         <Text className="text-muted-foreground text-center leading-relaxed">
-          This is a template project. Replace this placeholder with your app's
+          This is a template project. Replace this placeholder with your app{"'"}s
           main content — dashboards, feeds, or whatever fits your needs.
         </Text>
       </View>

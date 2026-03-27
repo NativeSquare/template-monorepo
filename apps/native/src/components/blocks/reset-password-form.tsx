@@ -13,7 +13,7 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { useColorScheme } from "nativewind";
 import * as React from "react";
 import { ActivityIndicator, TextInput, View } from "react-native";
-import z from "zod";
+import { z } from "zod";
 import { OTPInput } from "../custom/otp-input";
 import { PasswordInput } from "../custom/password-input";
 
@@ -60,7 +60,7 @@ export function ResetPasswordForm({ email }: { email: string }) {
         email,
         flow: "reset-verification",
       });
-    } catch (error) {
+    } catch (_error) {
       setFormError("Invalid verification code");
     } finally {
       setIsLoading(false);

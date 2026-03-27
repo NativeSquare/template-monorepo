@@ -124,7 +124,7 @@ export function AcceptInviteForm({
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Welcome, {invite.invite.name}!</h1>
                 <p className="text-muted-foreground text-balance">
-                  You've been invited to join the admin team
+                  You&apos;ve been invited to join the admin team
                   {invite.inviterName && ` by ${invite.inviterName}`}.
                 </p>
               </div>

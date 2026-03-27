@@ -20,7 +20,7 @@ import { useRouter } from "expo-router";
 import { useColorScheme } from "nativewind";
 import * as React from "react";
 import { ActivityIndicator, type TextInput, View } from "react-native";
-import z from "zod";
+import { z } from "zod";
 import { PasswordInput } from "../custom/password-input";
 
 export function SignInForm() {

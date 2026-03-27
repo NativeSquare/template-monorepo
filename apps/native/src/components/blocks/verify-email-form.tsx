@@ -14,7 +14,7 @@ import { useRouter } from "expo-router";
 import { useColorScheme } from "nativewind";
 import * as React from "react";
 import { ActivityIndicator, View } from "react-native";
-import z from "zod";
+import { z } from "zod";
 import { OTPInput } from "../custom/otp-input";
 
 export function VerifyEmailForm({ email }: { email: string }) {
@@ -52,7 +52,7 @@ export function VerifyEmailForm({ email }: { email: string }) {
         code: value,
         flow: "email-verification",
       });
-    } catch (error) {
+    } catch (_error) {
       setFormError("Invalid verification code");
     } finally {
       setIsLoading(false);

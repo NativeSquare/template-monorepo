@@ -47,13 +47,15 @@ export function SocialConnections({
       if (Platform.OS === "web") {
         return;
       }
+      if (!redirect) return;
       const result = await openAuthSessionAsync(
-        redirect!.toString(),
+        redirect.toString(),
         redirectTo
       );
       if (result.type === "success") {
         const { url } = result;
-        const code = new URL(url).searchParams.get("code")!;
+        const code = new URL(url).searchParams.get("code");
+        if (!code) return;
         await signIn(strategy.provider, { code, redirectTo: `${APP_SLUG}://` });
       }
     } catch (error) {

@@ -13,7 +13,7 @@ import { ChevronLeft } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
 import React from "react";
 import { ActivityIndicator, ScrollView, View } from "react-native";
-import z from "zod";
+import { z } from "zod";
 
 type ProfileFormData = {
   name: string;

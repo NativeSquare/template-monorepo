@@ -131,7 +131,7 @@ const NavMenuItem = ({
         </CollapsibleTrigger>
         <CollapsibleContent>
           <SidebarMenuSub>
-            {item.children!.map((child) => (
+            {item.children?.map((child) => (
               <SidebarMenuSubItem key={child.label}>
                 <SidebarMenuSubButton
                   asChild

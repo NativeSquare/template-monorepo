@@ -16,7 +16,11 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import "./global.css";
 
-const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
+if (!process.env.EXPO_PUBLIC_CONVEX_URL) {
+  throw new Error("EXPO_PUBLIC_CONVEX_URL is not set");
+}
+
+const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL, {
   unsavedChangesWarning: false,
 });
 
@@ -77,7 +81,7 @@ function RootStack() {
         [{ text: "OK", onPress: () => signOut() }]
       );
     }
-  }, [isAuthenticated, isBanned]);
+  }, [isAuthenticated, isBanned, signOut, user?.banReason]);
 
   if (isLoading) {
     return (

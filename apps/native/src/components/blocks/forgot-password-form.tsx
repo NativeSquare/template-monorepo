@@ -17,7 +17,7 @@ import { useRouter } from "expo-router";
 import { useColorScheme } from "nativewind";
 import * as React from "react";
 import { ActivityIndicator, View } from "react-native";
-import z from "zod";
+import { z } from "zod";
 import { api } from "@packages/backend/convex/_generated/api";
 
 export function ForgotPasswordForm() {
