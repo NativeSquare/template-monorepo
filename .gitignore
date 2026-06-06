@@ -37,3 +37,9 @@ yarn-error.log*
 
 # turbo
 .turbo
+
+# claude
+.claude
+
+# vscode
+.vscode
