@@ -1,6 +1,6 @@
-# NativeSquare Template Monorepo
+# Template Monorepo
 
-A private monorepo template used by NativeSquare to bootstrap greenfield projects.
+A monorepo template for bootstrapping greenfield projects.
 
 ## Tech Stack
 
@@ -76,7 +76,7 @@ Convex Auth requires a Resend API key and a JWT key pair.
 
 #### a. Create a Resend API key
 
-Go to the [NativeSquare Resend account](https://resend.com/api-keys) and create a new API key.
+Go to your [Resend account](https://resend.com/api-keys) and create a new API key.
 
 #### b. Add the Resend key to Convex
 
@@ -150,6 +150,33 @@ pnpm dev
 ```
 
 This starts the Convex backend, web app, admin panel, and native dev server via Turborepo. Use the arrow keys to switch between logs for each process.
+
+## Agent workflow setup
+
+These steps wire up the AI agent skills bundled with this template (requires [Claude Code](https://claude.ai/code)).
+
+### 8. Fill in `CLAUDE.md`
+
+`CLAUDE.md` already contains the default verify command and Convex prerequisite for this stack. If you've customized your scripts, update the `## Verify` section accordingly.
+
+### 9. Run `/setup-matt-pocock-skills`
+
+Open Claude Code in the project root and run:
+
+```
+/setup-matt-pocock-skills
+```
+
+This connects the agent skills to your GitHub repository and configures the issue tracker and triage label vocabulary. One-time per project.
+
+After this, the following skills are ready to use:
+
+| Skill | What it does |
+| ----- | ------------ |
+| `/to-issues` | Break a plan or PRD into GitHub issues |
+| `/triage` | Move issues through the triage state machine |
+| `/work-next-agent-issue` | Implement a single AFK issue autonomously |
+| `/work-all-agent-issues` | Drain the full backlog overnight |
 
 ## Preview Deployments
 
