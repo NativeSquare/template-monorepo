@@ -5,7 +5,6 @@ import { cleanup } from "@testing-library/react";
 // @testing-library/react cannot register its own act() environment or
 // auto-cleanup. Do both manually.
 declare global {
-  // eslint-disable-next-line no-var
   var IS_REACT_ACT_ENVIRONMENT: boolean | undefined;
 }
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
