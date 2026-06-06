@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { screen } from "@testing-library/react";
 import { api } from "@packages/backend/convex/_generated/api";
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 
 import {
   ConvexReactClientFake,
@@ -16,6 +16,19 @@ import { AppSidebar } from "./app-sidebar";
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn() }),
   usePathname: () => "/team",
+}));
+// next/link pulls in Next's app-router context (and a nested copy of react),
+// neither of which exist in jsdom. A plain anchor is enough for these tests.
+vi.mock("next/link", () => ({
+  default: ({
+    children,
+    href,
+    ...props
+  }: ComponentProps<"a"> & { href: string }) => (
+    <a href={href} {...props}>
+      {children}
+    </a>
+  ),
 }));
 vi.mock("@convex-dev/auth/react", () => ({
   useAuthActions: () => ({ signOut: vi.fn(), signIn: vi.fn() }),
