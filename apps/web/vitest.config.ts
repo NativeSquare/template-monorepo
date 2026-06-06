@@ -37,6 +37,22 @@ export default defineConfig({
           "dist/@testing-library/react.esm.js",
         ),
       },
+      {
+        find: /^use-sync-external-store\/shim(\/index\.js)?$/,
+        replacement: path.resolve(
+          __dirname,
+          "./src/test-utils/use-sync-external-store-stub.ts",
+        ),
+      },
+    ],
+  },
+  // Process all other dependencies through Vite so every react import in
+  // the tree resolves through the alias above. Only react and react-dom
+  // themselves stay external: they form the single native react instance
+  // that everything else is redirected to.
+  ssr: {
+    noExternal: [
+      /node_modules[\\/](?!(?:react|react-dom|scheduler)[\\/])/,
     ],
   },
   test: {
