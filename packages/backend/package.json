@@ -19,13 +19,13 @@
   "dependencies": {
     "@auth/core": "0.37.0",
     "@convex-dev/auth": "^0.0.90",
-    "@convex-dev/migrations": "^0.3.1",
-    "@convex-dev/resend": "^0.2.3",
+    "@convex-dev/migrations": "^0.3.5",
+    "@convex-dev/resend": "^0.2.4",
     "@packages/shared": "workspace:*",
     "@packages/transactional": "workspace:*",
     "convex": "^1.40.0",
     "oslo": "^1.2.1",
-    "resend": "3.2.0"
+    "resend": "6.12.4"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0"

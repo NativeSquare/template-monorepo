@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { screen } from "@testing-library/react";
 import { api } from "@packages/backend/convex/_generated/api";
+import type { Id } from "@packages/backend/convex/_generated/dataModel";
 import type { ReactNode } from "react";
 
 import {
@@ -27,6 +28,8 @@ describe("AppSidebar", () => {
   it("shows the logged-in user's name and email from the currentUser query", () => {
     const client = new ConvexReactClientFake();
     client.registerQueryFake(api.table.users.currentUser, () => ({
+      _id: "test_user_id" as unknown as Id<"users">,
+      _creationTime: 0,
       name: "Ada Lovelace",
       email: "ada@example.com",
       image: "",
