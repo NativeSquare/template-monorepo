@@ -15,7 +15,7 @@ type FunctionImpl = (args: Record<string, unknown>) => unknown;
  *
  * ```ts
  * const client = new ConvexReactClientFake();
- * client.registerQueryFake(api.table.users.currentUser, () => ({ name: "Ada" }));
+ * client.registerQueryFake(api.users.currentUser, () => ({ name: "Ada" }));
  * ```
  */
 export class ConvexReactClientFake {

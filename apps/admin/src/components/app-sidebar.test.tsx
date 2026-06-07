@@ -6,7 +6,7 @@ import type { ComponentProps, ReactNode } from "react";
 import {
   ConvexReactClientFake,
   renderWithConvex,
-} from "@/test-utils/renderWithConvex";
+} from "@packages/test-utils";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./app-sidebar";
 
