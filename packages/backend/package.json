@@ -6,6 +6,7 @@
     "dev": "convex dev",
     "setup": "convex dev --until-success",
     "test": "vitest run",
+    "test:watch": "vitest --watch",
     "typecheck": "tsc --noEmit -p convex",
     "migrate": "convex run migrations:runAll",
     "migrate:dryrun": "convex run migrations:runAll \"{dryRun: true}\"",

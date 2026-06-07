@@ -11,7 +11,13 @@
       "cache": false,
       "persistent": true
     },
-    "test": {},
+    "test": {
+      "dependsOn": ["^test"]
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    },
     "lint": {},
     "typecheck": {},
     "clean": {
